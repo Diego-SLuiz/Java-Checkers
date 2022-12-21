@@ -13,5 +13,5 @@ mover-se pelo tabuleiro; capturar peças inimigas; transformar-se em Dama.
 
 
 # Participantes
-Luiz Diego
-Jheniffer Fernandes
+- Luiz Diego
+- Jheniffer Fernandes
