@@ -1,4 +1,6 @@
-/idea
+.idea
+.mvn
 .class
+/target
 /out
 *.iml
