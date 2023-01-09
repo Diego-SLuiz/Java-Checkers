@@ -24,6 +24,7 @@ public class Main extends Application {
         stage.setScene(scene);
 
         stage.setResizable(false);
+        stage.setTitle("Checkers - D&J Games");
         stage.show();
     }
 

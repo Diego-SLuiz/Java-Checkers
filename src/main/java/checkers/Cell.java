@@ -12,10 +12,13 @@ public class Cell extends StackPane {
     private final Label background;
     private final CellColor color;
     private Piece piece;
-
-    public Cell(CellColor color) {
+    private Integer positionX;
+    private Integer positionY;
+    public Cell(CellColor color, Integer positionX, Integer positionY) {
         this.background = new Label();
         this.color = color;
+        this.positionX = positionX;
+        this.positionY = positionY;
         createCell();
     }
 
@@ -24,10 +27,25 @@ public class Cell extends StackPane {
         background.setGraphic(ImageLoader.load(imagePath, width, height));
         getChildren().add(background);
     }
+    public Piece getPiece() {
+        return piece;
+    }
 
-    public void placePiece(Piece piece) {
+    public void setPiece(Piece piece) {
         this.piece = piece;
         getChildren().add(piece);
+    }
+
+    public void removePiece() {
+        this.piece = null;
+    }
+
+    public Integer getPositionX() {
+        return positionX;
+    }
+
+    public Integer getPositionY() {
+        return positionY;
     }
 
 }
