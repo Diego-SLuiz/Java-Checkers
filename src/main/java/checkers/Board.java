@@ -50,11 +50,11 @@ public class Board extends GridPane {
                 cell.addEventHandler(MouseEvent.MOUSE_CLICKED, onCellSelector);
 
                 if (y < 3 && cellColor == CellColor.BROWN) {
-                    Piece piece = new Piece(PieceColor.BLACK, x, y);
+                    Piece piece = new Piece(PieceColor.BLACK);
                     cell.setPiece(piece);
                 }
                 else if (y >= cells.length - 3 && cellColor == CellColor.BROWN) {
-                    Piece piece = new Piece(PieceColor.RED, x, y);
+                    Piece piece = new Piece(PieceColor.RED);
                     cell.setPiece(piece);
                 }
 
@@ -62,5 +62,7 @@ public class Board extends GridPane {
             }
         }
     }
+
+
 
 }

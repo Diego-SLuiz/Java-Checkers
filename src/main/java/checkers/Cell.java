@@ -14,6 +14,7 @@ public class Cell extends StackPane {
     private Piece piece;
     private Integer positionX;
     private Integer positionY;
+
     public Cell(CellColor color, Integer positionX, Integer positionY) {
         this.background = new Label();
         this.color = color;
@@ -27,6 +28,7 @@ public class Cell extends StackPane {
         background.setGraphic(ImageLoader.load(imagePath, width, height));
         getChildren().add(background);
     }
+
     public Piece getPiece() {
         return piece;
     }
