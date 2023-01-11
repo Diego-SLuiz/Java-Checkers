@@ -50,4 +50,7 @@ public class Cell extends StackPane {
         return positionY;
     }
 
+    public CellColor getColor() {
+        return color;
+    }
 }
