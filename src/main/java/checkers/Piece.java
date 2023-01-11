@@ -20,4 +20,7 @@ public class Piece extends Label {
         setGraphic(ImageLoader.load(imagePath, width, height));
     }
 
+    public PieceColor getColor() {
+        return color;
+    }
 }

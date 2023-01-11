@@ -52,19 +52,34 @@ public class Board extends GridPane {
         }
     }
 
+    public void move(Cell sourceCell, Cell targetCell) {
+
+        if (targetCell.getColor() == CellColor.BROWN) {
+            System.out.println("Cor de movimento válido");
+
+            Integer distance = sourceCell.getPositionY() - targetCell.getPositionY();
+
+            if (sourceCell.getPiece().getColor() == PieceColor.RED && distance == 1) {
+                targetCell.setPiece(sourceCell.getPiece());
+                sourceCell.removePiece();
+                System.out.println("Movendo :)");
+            }
+
+        }
+    }
+
     EventHandler<MouseEvent> onCellSelector = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
             Cell targetCell = (Cell) mouseEvent.getSource();
             System.out.printf("Cell %d %d\n", targetCell.getPositionX(), targetCell.getPositionY());
 
-            if (sourceCell != null && targetCell.getPiece() == null) {
-                targetCell.setPiece(sourceCell.getPiece());
-                sourceCell.removePiece();
-                sourceCell = targetCell;
+            if (sourceCell != null && sourceCell.getPiece() != null && targetCell.getPiece() == null) {
+                move(sourceCell, targetCell);
             } else {
                 sourceCell = targetCell;
             }
         }
     };
+
 }
