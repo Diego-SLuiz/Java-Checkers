@@ -45,10 +45,10 @@ public class Board extends GridPane {
                 Cell cell = cells[x][y];
                 CellColor cellColor = cells[x][y].getColor();
                 if (y < 3 && cellColor == CellColor.BROWN) {
-                    Piece piece = new Piece(PieceColor.BLACK);
+                    Piece piece = new Piece(PieceColor.BLACK, x, y);
                     cell.setPiece(piece);
                 } else if (y >= cells.length - 3 && cellColor == CellColor.BROWN) {
-                    Piece piece = new Piece(PieceColor.RED);
+                    Piece piece = new Piece(PieceColor.RED, x, y);
                     cell.setPiece(piece);
                 }
             }
@@ -66,18 +66,41 @@ public class Board extends GridPane {
             if (currentTurn == 1 && isRedMovementValid) {
                 targetCell.setPiece(sourceCell.getPiece());
                 sourceCell.removePiece();
+                sourcePiece.setPositionX(targetCell.getPositionX());
+                sourcePiece.setPositionY(targetCell.getPositionY());
+                validateQueen(sourcePiece);
                 currentTurn = 2;
+
                 System.out.println("Turno do jogador 2");
             }
 
             else if (currentTurn == 2 && isBlackMovementValid) {
                 targetCell.setPiece(sourceCell.getPiece());
                 sourceCell.removePiece();
+                sourcePiece.setPositionX(targetCell.getPositionX());
+                sourcePiece.setPositionY(targetCell.getPositionY());
+                validateQueen(sourcePiece);
                 currentTurn = 1;
+
                 System.out.println("Turno do jogador 1");
             }
 
+
+
         }
+    }
+
+    public void validateQueen(Piece piece) {
+        Integer boardStart = 0;
+        Integer boardEnd = 7;
+
+        if (piece.getColor() == PieceColor.RED && piece.getPositionY() == boardStart) {
+            piece.turnQueen();
+        }
+        else if (piece.getColor() == PieceColor.BLACK && piece.getPositionY() == boardEnd) {
+            piece.turnQueen();
+        }
+
     }
 
     EventHandler<MouseEvent> onCellSelector = new EventHandler<MouseEvent>() {
