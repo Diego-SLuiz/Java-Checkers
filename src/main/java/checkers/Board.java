@@ -13,11 +13,14 @@ public class Board extends GridPane {
     private final Cell[][] cells;
     private Cell sourceCell;
 
+    private Integer currentTurn;
+
     public Board() {
         sizeX = 8;
         sizeY = 8;
         cells = new Cell[sizeX][sizeY];
         sourceCell = null;
+        currentTurn = 1;
         createBoard();
         createPieces();
     }
@@ -29,9 +32,9 @@ public class Board extends GridPane {
                 cellColor = x % 2 == 0 ? CellColor.BEIGE : CellColor.BROWN;
                 cellColor = y % 2 != 0 ? x % 2 == 0 ? CellColor.BROWN : CellColor.BEIGE : cellColor;
                 Cell cell = new Cell(cellColor, x, y);
+                cell.addEventHandler(MouseEvent.MOUSE_CLICKED, onCellSelector);
                 cells[x][y] = cell;
                 add(cell, x, y);
-                cell.addEventHandler(MouseEvent.MOUSE_CLICKED, onCellSelector);
             }
         }
     }
@@ -53,16 +56,25 @@ public class Board extends GridPane {
     }
 
     public void move(Cell sourceCell, Cell targetCell) {
-
         if (targetCell.getColor() == CellColor.BROWN) {
-            System.out.println("Cor de movimento válido");
+            Piece sourcePiece = sourceCell.getPiece();
+            Integer redPieceDistance = sourceCell.getPositionY() - targetCell.getPositionY();
+            Integer blackPieceDistance = targetCell.getPositionY() - sourceCell.getPositionY();
+            Boolean isRedMovementValid = sourceCell.getPiece().getColor() == PieceColor.RED && redPieceDistance == 1;
+            Boolean isBlackMovementValid = sourcePiece.getColor() == PieceColor.BLACK && blackPieceDistance == 1;
 
-            Integer distance = sourceCell.getPositionY() - targetCell.getPositionY();
-
-            if (sourceCell.getPiece().getColor() == PieceColor.RED && distance == 1) {
+            if (currentTurn == 1 && isRedMovementValid) {
                 targetCell.setPiece(sourceCell.getPiece());
                 sourceCell.removePiece();
-                System.out.println("Movendo :)");
+                currentTurn = 2;
+                System.out.println("Turno do jogador 2");
+            }
+
+            else if (currentTurn == 2 && isBlackMovementValid) {
+                targetCell.setPiece(sourceCell.getPiece());
+                sourceCell.removePiece();
+                currentTurn = 1;
+                System.out.println("Turno do jogador 1");
             }
 
         }
