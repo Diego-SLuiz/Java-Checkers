@@ -90,6 +90,20 @@ public class Board extends GridPane {
         }
     }
 
+    public void moveQueen(Cell sourceCell, Cell targetCell ){
+        Integer maxMovementRange = 8;
+        Integer northwestMovementRange = 0;
+        Integer northeastMovementRange = 0;
+        Integer southwestMovementRange = 0;
+        Integer southeastMovementRange = 0;
+
+        for (int i = 1; i <= maxMovementRange ; i++) {
+            System.out.println("Rainhaa");
+        }
+
+
+    }
+
     public void validateQueen(Piece piece) {
         Integer boardStart = 0;
         Integer boardEnd = 7;
@@ -110,7 +124,11 @@ public class Board extends GridPane {
             System.out.printf("Cell %d %d\n", targetCell.getPositionX(), targetCell.getPositionY());
 
             if (sourceCell != null && sourceCell.getPiece() != null && targetCell.getPiece() == null) {
-                move(sourceCell, targetCell);
+                if(sourceCell.getPiece().getQueen()){
+                    moveQueen(sourceCell, targetCell);
+                }else {
+                    move(sourceCell, targetCell);
+                }
             } else {
                 sourceCell = targetCell;
             }
