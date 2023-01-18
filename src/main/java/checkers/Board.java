@@ -70,37 +70,101 @@ public class Board extends GridPane {
                 sourcePiece.setPositionY(targetCell.getPositionY());
                 validateQueen(sourcePiece);
                 currentTurn = 2;
-
-                System.out.println("Turno do jogador 2");
-            }
-
-            else if (currentTurn == 2 && isBlackMovementValid) {
+            } else if (currentTurn == 2 && isBlackMovementValid) {
                 targetCell.setPiece(sourceCell.getPiece());
                 sourceCell.removePiece();
                 sourcePiece.setPositionX(targetCell.getPositionX());
                 sourcePiece.setPositionY(targetCell.getPositionY());
                 validateQueen(sourcePiece);
                 currentTurn = 1;
-
-                System.out.println("Turno do jogador 1");
             }
-
-
-
         }
     }
 
-    public void moveQueen(Cell sourceCell, Cell targetCell ){
-        Integer maxMovementRange = 8;
-        Integer northwestMovementRange = 0;
-        Integer northeastMovementRange = 0;
-        Integer southwestMovementRange = 0;
-        Integer southeastMovementRange = 0;
+    public void moveQueen(Cell sourceCell, Cell targetCell) {
+        Boolean isNorthDirection = sourceCell.getPositionY() > targetCell.getPositionY();
+        Boolean isSouthDirection = sourceCell.getPositionY() < targetCell.getPositionY();
+        Boolean isWestDirection = sourceCell.getPositionX() > targetCell.getPositionX();
+        Boolean isEastDirection = sourceCell.getPositionX() < targetCell.getPositionX();
+        Boolean isValidMovement = false;
 
-        for (int i = 1; i <= maxMovementRange ; i++) {
-            System.out.println("Rainhaa");
+        if (isNorthDirection && isWestDirection) {
+            Integer movementDistance = sourceCell.getPositionX() - targetCell.getPositionX();
+            isValidMovement = targetCell.getPositionY() == sourceCell.getPositionY() - movementDistance;
+            Integer startPositionX = Math.min(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer stopPositionX = Math.max(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer startPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+            Integer stopPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+
+            for (int x = startPositionX; x <= stopPositionX; x++) {
+                for (int y = startPositionY; y <= stopPositionY; y++) {
+                    if (cells[x][y].getPiece() != null) {
+                        isValidMovement = false;
+                    }
+                }
+            }
+        }
+        if (isNorthDirection && isEastDirection) {
+            Integer movementDistance = targetCell.getPositionX() - sourceCell.getPositionX();
+            isValidMovement = targetCell.getPositionY() == sourceCell.getPositionY() - movementDistance;
+
+            Integer startPositionX = Math.min(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer stopPositionX = Math.max(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer startPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+            Integer stopPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+
+            for (int x = startPositionX; x <= stopPositionX; x++) {
+                for (int y = startPositionY; y <= stopPositionY; y++) {
+                    if (cells[x][y].getPiece() != null) {
+                        isValidMovement = false;
+                    }
+                }
+            }
+        }
+        if (isSouthDirection && isWestDirection) {
+            Integer movementDistance = sourceCell.getPositionX() - targetCell.getPositionX();
+            isValidMovement = targetCell.getPositionY() == sourceCell.getPositionY() + movementDistance;
+
+            Integer startPositionX = Math.min(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer stopPositionX = Math.max(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer startPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+            Integer stopPositionY = Math.max(sourceCell.getPositionY(), targetCell.getPositionY());
+
+            for (int x = startPositionX; x <= stopPositionX; x++) {
+                for (int y = startPositionY; y <= stopPositionY; y++) {
+                    if (cells[x][y].getPiece() != null) {
+                        isValidMovement = false;
+                    }
+                }
+            }
+        }
+        if (isSouthDirection && isEastDirection) {
+            Integer movementDistance = targetCell.getPositionX() - sourceCell.getPositionX();
+            isValidMovement = targetCell.getPositionY() == sourceCell.getPositionY() + movementDistance;
+
+            Integer startPositionX = Math.min(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer stopPositionX = Math.max(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer startPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+            Integer stopPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+
+            for (int x = startPositionX; x <= stopPositionX; x++) {
+                for (int y = startPositionY; y <= stopPositionY; y++) {
+                    if (cells[x][y].getPiece() != null) {
+                        isValidMovement = false;
+                    }
+                }
+            }
         }
 
+        if (isValidMovement && sourceCell.getPiece().getColor() == PieceColor.RED && currentTurn == 1) {
+            targetCell.setPiece(sourceCell.getPiece());
+            sourceCell.removePiece();
+            currentTurn = 2;
+        } else if (isValidMovement && sourceCell.getPiece().getColor() == PieceColor.BLACK && currentTurn == 2) {
+            targetCell.setPiece(sourceCell.getPiece());
+            sourceCell.removePiece();
+            currentTurn = 1;
+        }
 
     }
 
@@ -110,8 +174,7 @@ public class Board extends GridPane {
 
         if (piece.getColor() == PieceColor.RED && piece.getPositionY() == boardStart) {
             piece.turnQueen();
-        }
-        else if (piece.getColor() == PieceColor.BLACK && piece.getPositionY() == boardEnd) {
+        } else if (piece.getColor() == PieceColor.BLACK && piece.getPositionY() == boardEnd) {
             piece.turnQueen();
         }
 
@@ -124,9 +187,9 @@ public class Board extends GridPane {
             System.out.printf("Cell %d %d\n", targetCell.getPositionX(), targetCell.getPositionY());
 
             if (sourceCell != null && sourceCell.getPiece() != null && targetCell.getPiece() == null) {
-                if(sourceCell.getPiece().getQueen()){
+                if (sourceCell.getPiece().getQueen()) {
                     moveQueen(sourceCell, targetCell);
-                }else {
+                } else {
                     move(sourceCell, targetCell);
                 }
             } else {
