@@ -39,7 +39,7 @@ public class Cell extends StackPane {
     }
 
     public void removePiece() {
-        this.piece = null;
+        piece = null;
     }
 
     public Integer getPositionX() {

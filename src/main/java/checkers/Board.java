@@ -14,6 +14,23 @@ public class Board extends GridPane {
     private Cell sourceCell;
 
     private Integer currentTurn;
+    EventHandler<MouseEvent> onCellSelector = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            Cell targetCell = (Cell) mouseEvent.getSource();
+            System.out.printf("Cell %d %d\n", targetCell.getPositionX(), targetCell.getPositionY());
+
+            if (sourceCell != null && sourceCell.getPiece() != null && targetCell.getPiece() == null) {
+                if (sourceCell.getPiece().getQueen()) {
+                    moveQueen(sourceCell, targetCell);
+                } else {
+                    move(sourceCell, targetCell);
+                }
+            } else {
+                sourceCell = targetCell;
+            }
+        }
+    };
 
     public Board() {
         sizeX = 8;
@@ -55,28 +72,81 @@ public class Board extends GridPane {
         }
     }
 
+    public void updateTurn() {
+        if (currentTurn == 1) {
+            currentTurn = 2;
+        }
+        else if (currentTurn == 2) {
+            currentTurn = 1;
+        }
+    }
+
+    public void validateQueen(Piece piece) {
+        Integer boardStart = 0;
+        Integer boardEnd = 7;
+
+        if (piece.getColor() == PieceColor.RED && piece.getPositionY() == boardStart) {
+            piece.turnQueen();
+        } else if (piece.getColor() == PieceColor.BLACK && piece.getPositionY() == boardEnd) {
+            piece.turnQueen();
+        }
+    }
+
     public void move(Cell sourceCell, Cell targetCell) {
         if (targetCell.getColor() == CellColor.BROWN) {
             Piece sourcePiece = sourceCell.getPiece();
-            Integer redPieceDistance = sourceCell.getPositionY() - targetCell.getPositionY();
-            Integer blackPieceDistance = targetCell.getPositionY() - sourceCell.getPositionY();
-            Boolean isRedMovementValid = sourceCell.getPiece().getColor() == PieceColor.RED && redPieceDistance == 1;
-            Boolean isBlackMovementValid = sourcePiece.getColor() == PieceColor.BLACK && blackPieceDistance == 1;
+            Piece targetPiece = targetCell.getPiece();
+            Cell previousTargetCell;
 
-            if (currentTurn == 1 && isRedMovementValid) {
+            Boolean isNorthwest = sourceCell.getPositionX() > targetCell.getPositionX() && sourceCell.getPositionY() > targetCell.getPositionY();
+            Boolean isNortheast = sourceCell.getPositionX() < targetCell.getPositionX() && sourceCell.getPositionY() > targetCell.getPositionY();
+            Boolean isSouthwest = sourceCell.getPositionX() > targetCell.getPositionX() && sourceCell.getPositionY() < targetCell.getPositionY();
+            Boolean isSoutheast = sourceCell.getPositionX() < targetCell.getPositionX() && sourceCell.getPositionY() < targetCell.getPositionY();
+
+            Integer startPositionX = Math.min(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer stopPositionX = Math.max(sourceCell.getPositionX(), targetCell.getPositionX());
+            Integer pieceDistanceX = stopPositionX - startPositionX;
+
+            Integer startPositionY = Math.min(sourceCell.getPositionY(), targetCell.getPositionY());
+            Integer stopPositionY = Math.max(sourceCell.getPositionY(), targetCell.getPositionY());
+            Integer pieceDistanceY = stopPositionY - startPositionY;
+
+            Boolean isRedMovementValid = sourcePiece.getColor() == PieceColor.RED && pieceDistanceX == 1 && pieceDistanceY == 1 && (isNorthwest || isNortheast) && currentTurn == 1;
+            Boolean isBlackMovementValid = sourcePiece.getColor() == PieceColor.BLACK && pieceDistanceX == 1 && pieceDistanceY == 1 && (isSouthwest || isSoutheast) && currentTurn == 2;
+
+            if (pieceDistanceX == 2 && pieceDistanceY == 2) {
+                if (isNorthwest) {
+                    previousTargetCell = cells[targetCell.getPositionX() + 1][targetCell.getPositionY() + 1];
+                } else if (isNortheast) {
+                    previousTargetCell = cells[targetCell.getPositionX() - 1][targetCell.getPositionY() + 1];
+                } else if (isSouthwest) {
+                    previousTargetCell = cells[targetCell.getPositionX() + 1][targetCell.getPositionY() - 1];
+                } else {
+                    previousTargetCell = cells[targetCell.getPositionX() - 1][targetCell.getPositionY() - 1];
+                }
+
+                Piece previousPiece = previousTargetCell.getPiece();
+                Boolean isRedCapturing = previousPiece != null && previousPiece.getColor() == PieceColor.BLACK && sourcePiece.getColor() == PieceColor.RED;
+                Boolean isBlackCapturing = previousPiece != null && previousPiece.getColor() == PieceColor.RED && sourcePiece.getColor() == PieceColor.BLACK;
+
+                if (isRedCapturing || isBlackCapturing) {
+                    previousTargetCell.removePiece();
+                    previousPiece.setVisible(false);
+                    targetCell.setPiece(sourcePiece);
+                    sourceCell.removePiece();
+                    updateTurn();
+                    validateQueen(sourcePiece);
+                    return;
+                }
+            }
+
+            if (isRedMovementValid || isBlackMovementValid) {
                 targetCell.setPiece(sourceCell.getPiece());
                 sourceCell.removePiece();
                 sourcePiece.setPositionX(targetCell.getPositionX());
                 sourcePiece.setPositionY(targetCell.getPositionY());
+                updateTurn();
                 validateQueen(sourcePiece);
-                currentTurn = 2;
-            } else if (currentTurn == 2 && isBlackMovementValid) {
-                targetCell.setPiece(sourceCell.getPiece());
-                sourceCell.removePiece();
-                sourcePiece.setPositionX(targetCell.getPositionX());
-                sourcePiece.setPositionY(targetCell.getPositionY());
-                validateQueen(sourcePiece);
-                currentTurn = 1;
             }
         }
     }
@@ -126,34 +196,15 @@ public class Board extends GridPane {
         }
     }
 
-    public void validateQueen(Piece piece) {
-        Integer boardStart = 0;
-        Integer boardEnd = 7;
+    public void capture(Cell sourceCell, Cell targetCell) {
+        Boolean isNorthwest = sourceCell.getPositionX() > targetCell.getPositionX() && sourceCell.getPositionY() > targetCell.getPositionY();
+        Boolean isNortheast = sourceCell.getPositionX() < targetCell.getPositionX() && sourceCell.getPositionY() > targetCell.getPositionY();
+        Boolean isSouthwest = sourceCell.getPositionX() > targetCell.getPositionX() && sourceCell.getPositionY() < targetCell.getPositionY();
+        Boolean isSoutheast = sourceCell.getPositionX() < targetCell.getPositionX() && sourceCell.getPositionY() < targetCell.getPositionY();
 
-        if (piece.getColor() == PieceColor.RED && piece.getPositionY() == boardStart) {
-            piece.turnQueen();
-        } else if (piece.getColor() == PieceColor.BLACK && piece.getPositionY() == boardEnd) {
-            piece.turnQueen();
-        }
+        Piece sourcePiece = sourceCell.getPiece();
+
 
     }
-
-    EventHandler<MouseEvent> onCellSelector = new EventHandler<MouseEvent>() {
-        @Override
-        public void handle(MouseEvent mouseEvent) {
-            Cell targetCell = (Cell) mouseEvent.getSource();
-            System.out.printf("Cell %d %d\n", targetCell.getPositionX(), targetCell.getPositionY());
-
-            if (sourceCell != null && sourceCell.getPiece() != null && targetCell.getPiece() == null) {
-                if (sourceCell.getPiece().getQueen()) {
-                    moveQueen(sourceCell, targetCell);
-                } else {
-                    move(sourceCell, targetCell);
-                }
-            } else {
-                sourceCell = targetCell;
-            }
-        }
-    };
 
 }
